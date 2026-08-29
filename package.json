@@ -1,0 +1,32 @@
+{
+  "name": "@v-aranda/artifice",
+  "version": "1.0.0",
+  "description": "CLI para scaffolding e orquestração de agentes de IA",
+  "type": "module",
+  "bin": { "artifice": "./bin/artifice.js" },
+  "scripts": {
+    "test": "vitest run",
+    "build:standalone": "node scripts/build-standalone.mjs",
+    "build:linux": "node scripts/build-standalone.mjs --output release/artifice",
+    "build:windows": "node scripts/build-standalone.mjs --output release/artifice.exe"
+  },
+  "keywords": ["cli", "scaffold", "notebooklm", "agents"],
+  "author": "Artifice Team",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/v-aranda/Artifice.git" },
+  "bugs": { "url": "https://github.com/v-aranda/Artifice/issues" },
+  "homepage": "https://github.com/v-aranda/Artifice#readme",
+  "files": ["bin", "src", "README.md", "LICENSE"],
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "googleapis": "^129.0.0",
+    "inquirer": "^9.2.12"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "postject": "^1.0.0-alpha.6",
+    "vitest": "^1.2.0"
+  }
+}

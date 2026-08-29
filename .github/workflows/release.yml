@@ -1,0 +1,84 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build:linux
+      - run: tar -C release -czf release/artifice-linux-x64.tar.gz artifice
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-release
+          path: |
+            release/artifice-linux-x64.tar.gz
+            scripts/install.sh
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build:windows
+      - name: Build installer
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.6
+        env:
+          ARTIFICE_VERSION: ${{ github.ref_name }}
+        with:
+          path: installer/Artifice.iss
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-release
+          path: release/Artifice-Setup-x64.exe
+
+  publish:
+    needs: [linux, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+      - name: Prepare assets and checksums
+        run: |
+          cp release-assets/linux-release/artifice-linux-x64.tar.gz release-assets/
+          cp release-assets/linux-release/install.sh release-assets/
+          cp release-assets/windows-release/Artifice-Setup-x64.exe release-assets/
+          cd release-assets
+          sha256sum artifice-linux-x64.tar.gz Artifice-Setup-x64.exe > checksums.txt
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            release-assets/artifice-linux-x64.tar.gz
+            release-assets/install.sh
+            release-assets/Artifice-Setup-x64.exe
+            release-assets/checksums.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - name: Verify tag matches package version
+        run: test "v$(node -p \"require('./package.json').version\")" = "$GITHUB_REF_NAME"
+      - run: npm publish --access public --provenance
