@@ -6,6 +6,7 @@
   "bin": { "artifice": "./bin/artifice.js" },
   "scripts": {
     "test": "vitest run",
+    "release": "node scripts/release.mjs",
     "build:standalone": "node scripts/build-standalone.mjs",
     "build:linux": "node scripts/build-standalone.mjs --output release/artifice",
     "build:windows": "node scripts/build-standalone.mjs --output release/artifice.exe"

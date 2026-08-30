@@ -24,6 +24,16 @@ O instalador adiciona o Artifice ao `PATH` do usuário. Durante a fase beta, o e
 npm install --global @v-aranda/artifice
 ```
 
+## Publicar uma release
+
+Defina a nova versão antes de publicar (por exemplo, `npm version 1.2.0 --no-git-tag-version`) e execute:
+
+```bash
+npm run release
+```
+
+O comando valida testes e pacote, confirma que `package.json` e `package-lock.json` possuem a mesma versão, cria o commit e a tag `v<versão>`, e envia ambos para `main`. A tag aciona o GitHub Actions, que cria a release, os instaladores e publica o pacote no npm. Ele não altera a versão por conta própria.
+
 ## Uso
 
 ```bash
