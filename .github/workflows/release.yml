@@ -21,12 +21,15 @@ jobs:
       - run: npm test
       - run: npm run build:linux
       - run: tar -C release -czf release/artifice-linux-x64.tar.gz artifice
+      - name: Stage flat Linux release assets
+        run: |
+          mkdir release-assets
+          cp release/artifice-linux-x64.tar.gz release-assets/
+          cp scripts/install.sh release-assets/
       - uses: actions/upload-artifact@v4
         with:
           name: linux-release
-          path: |
-            release/artifice-linux-x64.tar.gz
-            scripts/install.sh
+          path: release-assets/
 
   windows:
     runs-on: windows-latest
@@ -57,12 +60,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
+          name: linux-release
+          path: release-assets
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows-release
           path: release-assets
       - name: Prepare assets and checksums
         run: |
-          cp release-assets/linux-release/artifice-linux-x64.tar.gz release-assets/
-          cp release-assets/linux-release/install.sh release-assets/
-          cp release-assets/windows-release/Artifice-Setup-x64.exe release-assets/
           cd release-assets
           sha256sum artifice-linux-x64.tar.gz Artifice-Setup-x64.exe > checksums.txt
       - name: Create GitHub Release
