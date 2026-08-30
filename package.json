@@ -1,6 +1,6 @@
 {
   "name": "@v-aranda/artifice",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "CLI para scaffolding e orquestração de agentes de IA",
   "type": "module",
   "bin": { "artifice": "./bin/artifice.js" },

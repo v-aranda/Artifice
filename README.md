@@ -1,6 +1,6 @@
 # Artifice CLI
 
-CLI para iniciar a etapa de exploração de um projeto com Gemini Notebook Enterprise.
+CLI que inicia projetos por entrevista e gera skills para agentes de IA.
 
 ## Instalação
 
@@ -27,13 +27,25 @@ npm install --global @v-aranda/artifice
 ## Uso
 
 ```bash
-artifice explore
+artifice new MeuProjeto
 ```
 
-`artifice explore` configura a autenticação Google, cria o notebook vinculado ao projeto e inclui aqui o link de acesso. O projeto Google Cloud precisa ter o Gemini Notebook Enterprise configurado, licenças atribuídas e permissões IAM adequadas.
+`artifice new MeuProjeto` cria a pasta `meuprojeto` no diretório atual e segue direto para a entrevista. Para iniciar o diretório atual, use `artifice new .`; o nome da pasta aparece como sugestão e pode ser editado. Sem nome, `artifice new` pergunta o nome do projeto.
 
-Para acrescentar uma fonte web ao notebook vinculado:
+Em seguida, a fase **Explore** explica a skill e pergunta se ela deve usar o agente padrão ou o NotebookLM. A configuração Google só aparece caso NotebookLM seja selecionado. No primeiro uso, o Artifice autentica e pede uma única vez o número do projeto Cloud; os próximos projetos reutilizam essa conexão pessoal e criam notebooks privados automaticamente.
+
+Cada projeto recebe `.artifice/config.json`, `specs/README.md`, `skills/explore/SKILL.md`, `skills/refine/SKILL.md` e `README.md`. A skill Refine transforma pedidos concretos de funcionalidade em Epics, Features e User Stories; Explore não cria specs de produto.
+
+Para reconectar o NotebookLM após clonar um projeto em outra máquina:
 
 ```bash
+cd meu-projeto
+artifice connect
+```
+
+Para acrescentar uma fonte web a um projeto que escolheu NotebookLM:
+
+```bash
+cd meu-projeto
 artifice source https://example.com --name "Referência"
 ```

@@ -85,3 +85,27 @@ export async function getGoogleAuth(forceConfigure = false) {
   });
   return client;
 }
+
+export async function getNotebookLMConnection() {
+  await getGoogleAuth();
+  const config = getLocalConfig();
+  if (config.notebookLM) return config.notebookLM;
+
+  console.log('\nPara conectar seu NotebookLM pessoal, informe uma única vez o projeto Google Cloud que o hospeda.');
+  const { projectNumber } = await inquirer.prompt([{
+    type: 'input',
+    name: 'projectNumber',
+    message: 'Número do projeto Google Cloud:',
+    validate: (value) => /^\d+$/.test(value.trim()) || 'Use apenas dígitos.'
+  }]);
+  const notebookLM = { projectNumber: projectNumber.trim(), location: 'global', endpointRegion: 'global' };
+  saveLocalConfig({ ...config, notebookLM });
+  return notebookLM;
+}
+
+export async function reconnectNotebookLM(projectConnection) {
+  await configureGoogleAuth();
+  if (!projectConnection) return;
+  const notebookLM = { projectNumber: projectConnection.projectNumber, location: projectConnection.location, endpointRegion: projectConnection.endpointRegion };
+  saveLocalConfig({ ...getLocalConfig(), notebookLM });
+}

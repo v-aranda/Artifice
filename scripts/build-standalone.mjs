@@ -13,6 +13,7 @@ const dist = join(root, 'dist');
 const bundle = join(dist, 'artifice.cjs');
 const seaConfig = join(dist, 'sea-config.json');
 const blob = join(dist, process.platform === 'win32' ? 'artifice.blob' : 'artifice.blob');
+const packageVersion = JSON.parse(await (await import('node:fs/promises')).readFile(join(root, 'package.json'), 'utf8')).version;
 
 mkdirSync(dist, { recursive: true });
 mkdirSync(dirname(output), { recursive: true });
@@ -20,12 +21,13 @@ rmSync(blob, { force: true });
 rmSync(output, { force: true });
 
 await build({
-  entryPoints: [join(root, 'bin', 'artifice.js')],
+  entryPoints: [join(root, 'bin', 'standalone.js')],
   bundle: true,
   format: 'cjs',
   platform: 'node',
   target: 'node20',
-  outfile: bundle
+  outfile: bundle,
+  define: { __ARTIFICE_VERSION__: JSON.stringify(packageVersion) }
 });
 
 writeFileSync(seaConfig, JSON.stringify({ main: bundle, output: blob, disableExperimentalSEAWarning: true }));
