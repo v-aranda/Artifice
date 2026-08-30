@@ -7,9 +7,16 @@ import { getLocalConfig, saveLocalConfig } from '../utils/config.js';
 
 export const GOOGLE_SCOPE = 'https://www.googleapis.com/auth/cloud-platform';
 
+export function getBrowserLaunchCommand(url, platform = process.platform) {
+  // Do not invoke cmd.exe here: it treats '&' in OAuth query strings as command
+  // separators and silently drops parameters such as response_type=code.
+  const command = platform === 'win32' ? 'rundll32.exe' : platform === 'darwin' ? 'open' : 'xdg-open';
+  const args = platform === 'win32' ? ['url.dll,FileProtocolHandler', url] : [url];
+  return { command, args };
+}
+
 function openBrowser(url) {
-  const command = process.platform === 'win32' ? 'cmd' : process.platform === 'darwin' ? 'open' : 'xdg-open';
-  const args = process.platform === 'win32' ? ['/c', 'start', '', url] : [url];
+  const { command, args } = getBrowserLaunchCommand(url);
   execFile(command, args, () => {});
 }
 
